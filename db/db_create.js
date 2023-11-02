@@ -2,26 +2,26 @@ const db = require("./db_connection")
 
 /**** Drop existing tables, if any ****/
 
-const drop_client_item_table_sql = "DROP TABLE IF EXISTS client_item;"
+const drop_Items_table_sql = "DROP TABLE IF EXISTS Items;"
 
-db.execute(drop_client_item_table_sql);
+db.execute(drop_Items_table_sql);
 
-const drop_client_table_sql = "DROP TABLE IF EXISTS client;"
+const drop_Center_table_sql = "DROP TABLE IF EXISTS Center;"
 
-db.execute(drop_client_table_sql);
+db.execute(drop_Center_table_sql);
 
-const drop_inventory_table_sql = "DROP TABLE IF EXISTS inventory;"
+const drop_Item_Center_table_sql = "DROP TABLE IF EXISTS Item_Center;"
 
-db.execute(drop_inventory_table_sql);
+db.execute(drop_Item_Center_table_sql);
 
-const create_client_table_sql = `
-    CREATE TABLE client (
-    client_id INT NOT NULL AUTO_INCREMENT,
-    client_first_name VARCHAR(45) NULL,
-    client_last_name VARCHAR(45) NULL,
-    client_time VARCHAR(45) NULL,
-    client_day VARCHAR(45) NULL,
-    PRIMARY KEY (client_id));
+const create_Items_table_sql = `
+CREATE TABLE Items (
+  item_id INT NOT NULL,
+  item_name VARCHAR(45) NULL,
+  item_brand VARCHAR(45) NULL,
+  item_count INT NULL,
+  item_desc VARCHAR(150) NULL,
+  PRIMARY KEY (item_id));
     `
     db.execute(create_client_table_sql);
 
