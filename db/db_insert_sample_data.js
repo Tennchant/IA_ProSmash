@@ -1,28 +1,30 @@
 const db = require("./db_connection");
 
-const delete_inventory_table_sql = "DELETE FROM inventory;"
-db.execute(delete_inventory_table_sql);
+const delete_items_table_sql = "DELETE FROM items;"
+db.execute(delete_items_table_sql);
 
-const delete_client_table_sql = "DELETE FROM client;"
-db.execute(delete_client_table_sql);
+const delete_centers_table_sql = "DELETE FROM centers;"
+db.execute(delete_centers_table_sql);
 
-const delete_client_item_table_sql = "DELETE FROM client_item;"
-db.execute(delete_client_item_table_sql);
+const delete_center_item_table_sql = "DELETE FROM center_item;"
+db.execute(delete_center_item_table_sql);
 
-const insert_client_sql = `
-    INSERT INTO client
-        (client_id, client_first_name, client_last_name, client_time, client_day)
+const delete_students_table_sql = "DELETE FROM students"
+db.execute(delete_students_table_sql);
+
+const insert_centers_sql = `
+    INSERT INTO centers
+        (center_id, center_name, center_town, center_time, center_fee)
     VALUES
         (?, ?, ?, ?, ?);
 `
 
-db.execute(insert_client_sql, [1, 'Martha', 'Becky', '60 mins', 'Monday']);
-db.execute(insert_client_sql, [2, 'Eiliyah', 'Sarowar', '30 mins', 'Wednesday']);
-db.execute(insert_client_sql, [3, 'Seungkwan', 'Boo', '110 mins', 'Tuesday']);
-db.execute(insert_client_sql, [4, 'Tenn', 'Kujou', '20 mins', 'Friday']);
+db.execute(insert_centers_sql, [1, 'Cavalry Church', 'Dumont', '60 mins', '25']);
+db.execute(insert_centers_sql, [2, 'Leonia Recreation Center', 'Leonia', '60 mins', '30']);
+db.execute(insert_centers_sql, [3, 'Ridgefield Park Recreation ADULTS', 'Ridgefield Park', '90 mins', '25']);
 
 const insert_item_sql = `
-    INSERT INTO inventory
+    INSERT INTO items
         (item_id, item_name, item_brand, item_count, item_desc)
     VALUES
         (?, ?, ?, ?, ?);
@@ -43,18 +45,15 @@ db.execute(insert_item_sql, [7, 'Shoes', 'Butterfly', 3, 'Extra Table Tennis sho
 
 db.execute(insert_item_sql, [8, 'Ball Catching Net', 'null', 1, 'Homemade net for ball catching']);
 
-const insert_clientItem_sql = `
-    INSERT INTO client_item
+const insert_centerItem_sql = `
+    INSERT INTO center_item
         (client_id, item_id)
     VALUES
         (?, ?);
     `
-    db.execute(insert_clientItem_sql, [1, 1]);
-    db.execute(insert_clientItem_sql, [1, 8]);
-    db.execute(insert_clientItem_sql, [2, 3]);
-    db.execute(insert_clientItem_sql, [2, 5]);
-    db.execute(insert_clientItem_sql, [3, 5]);
-    db.execute(insert_clientItem_sql, [4, 1]);
-    db.execute(insert_clientItem_sql, [4, 2]);
+    db.execute(insert_centerItem_sql, [1, 1]);
+    db.execute(insert_centerItem_sql, [1, 8]);
+    db.execute(insert_centerItem_sql, [2, 3]);
+    db.execute(insert_centerItem_sql, [2, 5]);
 
     db.end();

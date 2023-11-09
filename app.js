@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 
 const read_inventory_sql = `
     select item_name, item_brand, item_count
-    from inventory
+    from items
     order by item_id;
 `
 
@@ -48,8 +48,8 @@ app.get("/inventory", (req, res) => {
 
 const read_detail_sql = `
     select item_name, item_brand, item_count, item_desc
-    from inventory
-    where inventory.item_id = ?
+    from items
+    where items.item_id = ?
 `
 
 //define a route for the details page
@@ -71,6 +71,11 @@ app.get("/inventory/detail/:id", (req, res) => {
 //define a route for the schedule page
 app.get("/schedule", (req, res) => {
     res.render('schedule');
+})
+
+//define a route for the finance page
+app.get("/finances", (req, res) => {
+    res.render('finances');
 })
 
 app.get("/favicon.ico", (req, res) => {
