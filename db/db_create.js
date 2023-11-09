@@ -14,6 +14,10 @@ const drop_Item_Center_table_sql = "DROP TABLE IF EXISTS center_item;"
 
 db.execute(drop_Item_Center_table_sql);
 
+const drop_Student_table_sql = "DROP TABLE IF EXISTS students;"
+
+db.execute(drop_Student_table_sql);
+
 const create_items_table_sql = `
 CREATE TABLE items (
   item_id INT NOT NULL,
@@ -38,18 +42,19 @@ CREATE TABLE centers (
 
     const create_students_table_sql = `
     CREATE TABLE students (
-      student_id INT NOT NULL,
-      student_name_first VARCHAR(45) NULL,
-      student_name_last VARCHAR(45) NULL,
-      center_id INT NULL,
-      student_attendance TINYINT NULL,
-      PRIMARY KEY (student_id));
-      INDEX studentcenter_idx (center_id ASC);
-      CONSTRAINT studentcenter
-      FOREIGN KEY (center_id)
-      REFERENCES ib_2324_drecha24.centers (center_id)
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION;
+  student_id INT NOT NULL,
+  student_name_first VARCHAR(45) NULL,
+  student_name_last VARCHAR(45) NULL,
+  center_id INT NULL,
+  student_attendance TINYINT NULL,
+  PRIMARY KEY (student_id),
+  INDEX studentcenter_idx (center_id ASC),
+  CONSTRAINT stucen
+    FOREIGN KEY (center_id)
+    REFERENCES ib_2324_drecha24.centers (center_id)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
           `
     
     db.execute(create_students_table_sql);
