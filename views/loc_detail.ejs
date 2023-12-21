@@ -17,7 +17,7 @@
           'opsz' 48
         }
         </style>
-    <title>Details</title>
+    <title>Location Edit</title>
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
@@ -33,27 +33,26 @@
             </ul>
         </div>
     </nav>
-
     <div class="center-align">
-        <h1><%= item.item_name %></h1>
+        <h1>Location</h1>
     </div>
 
     <div class="container">
         <table>
             
             <tr>
-                <th>Brand</th>
-                <td><%= item.item_brand %></td>
+                <th>Location Name</th>
+                <td><%= locDet.loc_name %></td>
             </tr>
 
             <tr>
-                <th>Number</th>
-                <td><%= item.item_count %></td>
+                <th>Location Town</th>
+                <td><%= locDet.loc_town %></td>
             </tr>
 
             <tr>
                 <th>Description</th>
-                <td><%= item.item_desc %></td>
+                <td><%= locDet.loc_desc %></td>
             </tr>
 
         </table>
@@ -64,7 +63,7 @@
         <a class="btn-large waves-effect waves-light green left modal-trigger" href="#edit">
             <i class="material-icons right">edit</i>Edit</a>
 
-        <a class="btn-large waves-effect waves-light red right">
+        <a class="btn-large waves-effect waves-light red right" href="/location/detail/<%=locDet.loc_id%>/delete">
             <i class="material-icons right">delete</i>Delete</a>
 
     </div>
@@ -75,23 +74,18 @@
             <form id="updateForm">
                 <div class="row">
                     <div class="input-field col s8">
-                        <input type="text" id="titleInput" name="title" class="validate" data-length="45" required value="<%= item.item_name %>">
-                            <label for="titleInput">Item Name:</label>
+                        <input type="text" id="titleInput" name="title" class="validate" data-length="45" required value="<%= locDet.loc_name %>">
+                            <label for="titleInput">Location Name:</label>
                     </div>
                 
 
                 <div class="input-field col s4">
-                    <input type="text" id="brandInput" name="brand" class="validate" data-length="45" required value="<%= item.item_brand %>">
-                    <label for="brandInput">Brand:</label>
+                    <input type="text" id="townInput" name="town" class="validate" data-length="45" required value="<%= locDet.loc_town %>">
+                    <label for="townInput">Town:</label>
                 </div>
 
                 <div class="input-field col s6">
-                    <input type="number" id="numberInput" name="number" class="validate" min=1 value=<%= item.item_count %>>
-                    <label for="numberInput">Number:</label>
-                </div>
-
-                <div class="input-field col s6">
-                    <textarea class="materialize-textarea" id="descriptionInput" name="description" data-length="150"><%= item.item_desc %></textarea>
+                    <textarea class="materialize-textarea" id="descriptionInput" name="description" data-length="150"><%= locDet.loc_desc %></textarea>
                     <label for="descriptionInput">Description:</label>
                 </div>
                 
@@ -110,7 +104,45 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    //This parts from chatgpt
+    <script>
+        function updateLocation() {
+            // Get the updated values from the form
+            const updatedName = document.getElementById('titleInput').value;
+            const updatedTown = document.getElementById('townInput').value;
+            const updatedDescription = document.getElementById('descriptionInput').value;
+    
+            const updateData = {
+                loc_name: updatedName,
+                loc_town: updatedTown,
+                loc_desc: updatedDescription
+            };
 
+            const getLocId = locDet.loc_id
+            const updateUrl = `/locations/detail/${getLocId}`;
+    
+            // Make an AJAX request to update the data on the server
+            fetch(updateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the server response as needed
+                console.log('Server response:', data);
+    
+                // Close the modal after successful update
+                M.Modal.getInstance(document.getElementById('edit')).close();
+            })
+            .catch(error => {
+                console.error('Error updating location:', error);
+                // Handle error scenarios
+            });
+        }
+    </script>
     <script> M.AutoInit();</script>
     </body>
     </html>

@@ -26,7 +26,7 @@
             <a href="#" class="sidenav-trigger"><i class="material-icons left">menu</i></a>
             <ul class="right">
                 <li><a href="/"><i class="material-icons left">home</i>Home</a></li>
-                <li><a href="/inventory"><i class="material-symbols-outlined">density_small</i>  Inventory</a></li>
+                <li><a href="/locations"><i class="material-symbols-outlined">density_small</i>  Locations</a></li>
                 <li><a href="/finances"><i class="material-symbols-outlined">density_small</i>  Finances</a></li>
                 <li><a href="/schedule"><i class="material-symbols-outlined">density_small</i>  Schedule</a></li>
             </ul>
@@ -39,27 +39,33 @@
         <table>
             <thead>
                 <tr>
-                    <th>Client</th>
-                    <th>Duration</th>
-                    <th>Materials needed</th>
-                    <th>Day</th>
+                    <th>Session Name</th>
+                    <th>Location</th>
                 </tr>
             </thead>
 
             <tbody>
-                <tr>
-                    <td>Martha Becky</td>
-                    <td>60 min</td>
-                    <td>Ball x 2, Table x 1</td>
-                    <td>Monday</td>
-                </tr>
+                <% for (let i = 0; i < sesList.length; i++) { %>
+                    <tr>
+                        <td><%= sesList[i].ses_name %></td>
+                        <td><%= sesList[i].loc_name %></td>
+                        <td>
+                            <a class="btn-large waves-effect waves-light green left modal-trigger" href="/schedule/session/detail/<%=sesList[i].ses_id%>">
+                                <i class="material-icons right">edit</i>Details
+                            </a>
+       
+                    
+                            <a class="btn-large waves-effect waves-light red right" href="/schedule/session/detail/<%=sesList[i].ses_id%>/delete">
+                                <i class="material-icons right">delete</i>Delete</a>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>Eiliyah Sarowar</td>
-                    <td>30 min</td>
-                    <td>Ball x 1, Table x 1, Robot x 1</td>
-                    <td>Wednesday</td>
-                </tr>
+                    <% if (i === 0) { %>
+                        <script>
+                            console.log('Generated link for the first item:', "/schedule/session/detail/<%=sesList[0].ses_id%>");
+                        </script>
+                    <% } %>
+                    <% } %>
             </tbody>
         </table>
     </div>

@@ -27,13 +27,12 @@
             <a href="#" class="sidenav-trigger"><i class="material-icons left">menu</i></a>
             <ul class="right">
                 <li><a href="/"><i class="material-icons left">home</i>Home</a></li>
-                <li><a href="/inventory"><i class="material-symbols-outlined">density_small</i>  Inventory</a></li>
+                <li><a href="/locations"><i class="material-symbols-outlined">density_small</i>  Locations</a></li>
                 <li><a href="/finances"><i class="material-symbols-outlined">density_small</i>  Finances</a></li>
                 <li><a href="/schedule"><i class="material-symbols-outlined">density_small</i>  Schedule</a></li>
             </ul>
         </div>
     </nav>
-
 
     <div class="center-align">
         <h1>Finances!</h1>
@@ -47,28 +46,42 @@
                     <th>Name</th>
                     <th>Desc.</th>
                     <th>Amt.</th>
-                    <th>Total</th>
                 </tr>
             </thead>
 
             <tbody>
+                <th>Costs</th>
+                <% for (let i = 0; i < costList.length; i++) { %>
                     <tr>
-                        <td><%= 'Leonia' %></td>
-                        <td><%= 'Winter' %></td>
-                        <td><%= '+$500' %></td>
-                        <td><%= '$500' %></td>
-                        
-                        <td>
-                            <a class="btn-small waves-effect waves-light">
-                                <i class="material-icons right">edit</i>
-                                Info/Edit
-                            </a>
-                            <a class="btn-small waves-effect waves-light red">
-                                <i class="material-icons right">delete</i>
-                                Delete
-                            </a>
-                        </td>
+                        <td><%= costList[i].item_name %></td>
+                        <td><%= costList[i].item_desc %></td>
+                        <td><%= '-' + costList[i].total_cost %></td>
                     </tr>
+                    <% } %>
+                <th>Revenues</th>
+                    <% for (let i = 0; i < revList.length; i++) { %>
+                        <tr>
+                            <td><%= revList[i].sesName %></td>
+                            <td></td>
+                            <td><%= revList[i].total_revenues %></td>
+                        </tr>
+                        <% } %>
+                        <th>Total</th>
+                        <tr>
+                            <td></td>
+                            <td>Cumulative Total Cost:</td>
+                            <td><%= '-' + cumTC %></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Cumulative Total Revenue:</td>
+                            <td><%= cumTR %></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Total:</td>
+                            <td><%= cumTR - cumTC %></td>
+                        </tr>
             </tbody>
         </table>
     </div>

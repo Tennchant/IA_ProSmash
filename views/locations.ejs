@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 48
+        }
+        </style>
+    <title>Inventory</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="sidenav-trigger"><i class="material-icons left">menu</i></a>
+            <ul class="right">
+                <li><a href="/"><i class="material-icons left">home</i>Home</a></li>
+                <li><a href="/locations"><i class="material-symbols-outlined">density_small</i>  Locations</a></li>
+                <li><a href="/finances"><i class="material-symbols-outlined">density_small</i>  Finances</a></li>
+                <li><a href="/schedule"><i class="material-symbols-outlined">density_small</i>  Schedule</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="center-align">
+        <h1>Locations</h1>
+    </div>
+
+    <div class="container">
+        <table class="center-align">
+
+            <thead>
+                <tr>
+                    <th>Center Name</th>
+                    <th>Town</th>
+                    <a class="btn-large waves-effect waves-light green left modal-trigger" href="/location/add">
+                        <i class="material-icons right">edit</i>Add
+                    </a>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% for (let i = 0; i < locList.length; i++) { %>
+                    <tr>
+                        <td><%= locList[i].loc_name %></td>
+                        <td><%= locList[i].loc_town %></td>
+                        <td>
+                            <a class="btn-large waves-effect waves-light green left modal-trigger" href="/location/detail/<%=locList[i].loc_id%>">
+                                <i class="material-icons right">edit</i>Details
+                            </a>
+       
+                    
+                            <a class="btn-large waves-effect waves-light red right" href="/location/detail/<%=locList[i].loc_id%>/delete">
+                                <i class="material-icons right">delete</i>Delete</a>
+
+                            <a class="btn-small waves-effect waves-light blue" href="/inventory/<%=locList[i].inventory_id%>">
+                                View Inventory
+                            </a>
+                        </td>
+                    </tr>
+                    <% } %>
+            </tbody>
+        </table>
+    </div>
+
+   <div class="section" id="add">
+        <h2>Add a location</h2>
+        <form id="addForm" method="post" action="/location">
+            <div class="row">
+                <div class="input-field col s8">
+                    <input type="text" id="nameInput" name="name" class="validate" data-length="32" required>
+                    <label for="nameInput">Location Name:</label>
+                </div>
+            </div>
+
+
+        </form>
+
+   </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    //this is from chatgpt
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.modal-trigger');
+    
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const locId = this.getAttribute('data-loc-id');
+                    const loc = locList.find(location => location.loc_id === locId);
+    
+                    document.getElementById('nameInput').value = loc.loc_name;
+                    document.getElementById('townInput').value = loc.loc_town;
+                });
+            });
+        });
+    </script> -->
+    <script>M.AutoInit();</script>
+</body>
+</html>

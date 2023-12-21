@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <style>
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 48
+        }
+        </style>
+    <title>Session Details</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="sidenav-trigger"><i class="material-icons left">menu</i></a>
+            <ul class="right">
+                <li><a href="/"><i class="material-icons left">home</i>Home</a></li>
+                <li><a href="/locations"><i class="material-symbols-outlined">density_small</i>  Locations</a></li>
+                <li><a href="/finances"><i class="material-symbols-outlined">density_small</i>  Finances</a></li>
+                <li><a href="/schedule"><i class="material-symbols-outlined">density_small</i>  Schedule</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="center-align">
+        <h1>Location</h1>
+    </div>
+
+    <div class="container">
+        <table>
+            
+            <tr>
+                <th>Session Name</th>
+                <td><%= sesList.ses_name %></td>
+            </tr>
+
+            <tr>
+                <th>Session Location</th>
+                <td><%= sesList.loc_town %></td>
+            </tr>
+
+            <tr>
+                <th>Session Day</th>
+                <td><%= sesList.ses_day %></td>
+            </tr>
+            <tr>
+                <th>Session Hour</th>
+                <td><%= sesList.ses_day %></td>
+            </tr>
+
+        </table>
+    </div>
+    
+    <div class="section container" id="controls">
+
+        <a class="btn-large waves-effect waves-light green left modal-trigger" href="#edit">
+            <i class="material-icons right">edit</i>Edit</a>
+
+        <a class="btn-large waves-effect waves-light red right">
+            <i class="material-icons right">delete</i>Delete</a>
+
+    </div>
+
+    <div class="modal" id="edit">
+        <div class="modal-content">
+            <h3>Edit item</h3>
+            <form id="updateForm">
+                <div class="row">
+                    <div class="input-field col s8">
+                        <input type="text" id="titleInput" name="title" class="validate" data-length="45" required value="<%= sesList.ses_name %>">
+                            <label for="titleInput">Session Name:</label>
+                    </div>
+                
+
+                <div class="input-field col s4">
+                    <input type="text" id="locInput" name="location" class="validate" data-length="45" required value="<%= sesList.loc_name %>">
+                    <label for="locInput">Location:</label>
+                </div>
+
+                <div class="input-field col s4">
+                    <input type="text" id="dayInput" name="day" class="validate" data-length="45" required value="<%= sesList.ses_day %>">
+                    <label for="dayInput">Day:</label>
+                </div>
+
+                <div class="input-field col s4">
+                    <input type="text" id="hourInput" name="hour" class="validate" data-length="45" required value="<%= sesList.ses_hour %>">
+                    <label for="hourInput">Time:</label>
+                </div>
+              
+            </form>
+
+            <div class="modal-footer">
+                <button class="btn waves-effect waves-light " type="submit" form="updateForm">
+                    <i class="material-icons right">send</i>
+                    Update
+                </button>
+                <button class="modal-close waves-effect waves-green btn-flat" >Cancel</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    //This parts from chatgpt
+    <script>
+        function updateLocation() {
+            // Get the updated values from the form
+            const updatedName = document.getElementById('titleInput').value;
+            const updatedLocation = document.getElementById('locInput').value;
+            const updatedDay = document.getElementById('dayInput').value;
+            const updatedHour = document.getElementById('hourInput').value;
+    
+            const updateData = {
+                ses_name: updatedName,
+                //loc_name here doesnt make sense since i need to choose from existing locations...make locations a drop-down
+                loc_name: updatedLocation,
+                ses_day: updatedDay,
+                ses_hour: updatedHour
+            };
+
+            const getSesId = sesList.ses_id
+            const updateUrl = `/schedule/session/${getSesId}`;
+    
+            // Make an AJAX request to update the data on the server
+            fetch(updateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the server response as needed
+                console.log('Server response:', data);
+    
+                // Close the modal after successful update
+                M.Modal.getInstance(document.getElementById('edit')).close();
+            })
+            .catch(error => {
+                console.error('Error updating location:', error);
+                // Handle error scenarios
+            });
+        }
+    </script>
+    <script> M.AutoInit();</script>
+    </body>
+    </html>
