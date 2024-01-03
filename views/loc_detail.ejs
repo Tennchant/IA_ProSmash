@@ -63,7 +63,7 @@
         <a class="btn-large waves-effect waves-light green left modal-trigger" href="#edit">
             <i class="material-icons right">edit</i>Edit</a>
 
-        <a class="btn-large waves-effect waves-light red right" href="/location/detail/<%=locDet.loc_id%>/delete">
+        <a class="btn-large waves-effect waves-light red right" href="/locations/detail/<%=locDet.loc_id%>/delete">
             <i class="material-icons right">delete</i>Delete</a>
 
     </div>
@@ -104,44 +104,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    //This parts from chatgpt
-    <script>
-        function updateLocation() {
-            // Get the updated values from the form
-            const updatedName = document.getElementById('titleInput').value;
-            const updatedTown = document.getElementById('townInput').value;
-            const updatedDescription = document.getElementById('descriptionInput').value;
-    
-            const updateData = {
-                loc_name: updatedName,
-                loc_town: updatedTown,
-                loc_desc: updatedDescription
-            };
-
-            const getLocId = locDet.loc_id
-            const updateUrl = `/locations/detail/${getLocId}`;
-    
-            // Make an AJAX request to update the data on the server
-            fetch(updateUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updateData),
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the server response as needed
-                console.log('Server response:', data);
-    
-                // Close the modal after successful update
-                M.Modal.getInstance(document.getElementById('edit')).close();
-            })
-            .catch(error => {
-                console.error('Error updating location:', error);
-                // Handle error scenarios
-            });
-        }
     </script>
     <script> M.AutoInit();</script>
     </body>

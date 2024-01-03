@@ -20,7 +20,7 @@ CREATE TABLE item (
 
 const create_location_table_sql = `
 CREATE TABLE location (
-  loc_id INT NOT NULL,
+  loc_id INT NOT NULL AUTO_INCREMENT,
   loc_name VARCHAR(45) NULL,
   loc_town VARCHAR(45) NULL,
   loc_desc VARCHAR(150) NULL,

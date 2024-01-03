@@ -34,7 +34,7 @@
         </div>
     </nav>
     <div class="center-align">
-        <h1>Location</h1>
+        <h1>Session Details</h1>
     </div>
 
     <div class="container">
@@ -47,7 +47,7 @@
 
             <tr>
                 <th>Session Location</th>
-                <td><%= sesList.loc_town %></td>
+                <td><%= sesList.loc_name %></td>
             </tr>
 
             <tr>
@@ -56,7 +56,12 @@
             </tr>
             <tr>
                 <th>Session Hour</th>
-                <td><%= sesList.ses_day %></td>
+                <td><%= sesList.ses_hour %></td>
+            </tr>
+
+            <tr>
+                <th>Session Fee</th>
+                <td><%= sesList.ses_fee %></td>
             </tr>
 
         </table>
@@ -67,7 +72,7 @@
         <a class="btn-large waves-effect waves-light green left modal-trigger" href="#edit">
             <i class="material-icons right">edit</i>Edit</a>
 
-        <a class="btn-large waves-effect waves-light red right">
+        <a class="btn-large waves-effect waves-light red right" href="/schedule/session/detail/<%=sesList.ses_id%>/delete">
             <i class="material-icons right">delete</i>Delete</a>
 
     </div>
@@ -75,7 +80,7 @@
     <div class="modal" id="edit">
         <div class="modal-content">
             <h3>Edit item</h3>
-            <form id="updateForm">
+            <form id="updateForm" method="post" action="/schedule/session/detail/<%=sesList.ses_id%>">
                 <div class="row">
                     <div class="input-field col s8">
                         <input type="text" id="titleInput" name="title" class="validate" data-length="45" required value="<%= sesList.ses_name %>">
@@ -83,10 +88,17 @@
                     </div>
                 
 
-                <div class="input-field col s4">
-                    <input type="text" id="locInput" name="location" class="validate" data-length="45" required value="<%= sesList.loc_name %>">
-                    <label for="locInput">Location:</label>
-                </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <select id="locationInput" name="location" required>
+                                <option value="" disabled selected>Choose a location</option>
+                                <% locList.forEach(location => { %>
+                                    <option value="<%= location.loc_id %>"><%= location.loc_name %></option>
+                                <% }); %>
+                            </select>
+                            <label for="locationInput">Location:</label>
+                        </div>
+                    </div>
 
                 <div class="input-field col s4">
                     <input type="text" id="dayInput" name="day" class="validate" data-length="45" required value="<%= sesList.ses_day %>">
@@ -96,6 +108,11 @@
                 <div class="input-field col s4">
                     <input type="text" id="hourInput" name="hour" class="validate" data-length="45" required value="<%= sesList.ses_hour %>">
                     <label for="hourInput">Time:</label>
+                </div>
+
+                <div class="input-field col s4">
+                    <input type="number" id="feeInput" name="fee" class="validate" min=1 max=1000 value=<%= sesList.ses_fee %>>
+                    <label for="feeInput">Fee per Student:</label>
                 </div>
               
             </form>

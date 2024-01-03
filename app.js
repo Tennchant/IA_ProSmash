@@ -25,46 +25,67 @@ app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.urlencoded({ extended: false }) );
+
 //define a route for the default home page
 app.get("/", (req, res) => {
     res.render('index');
 })
 
-const read_inventory_sql = `
-    select inventory_id
-    from inventory
-    order by inventory_id
-`
-
-
 const read_item_sql = `
-    select item_name, item_brand, quantity
+    select item.item_id, item_name, item_brand, quantity, inventory_id
     from item
     join inv_item on item.item_id = inv_item.item_id
     where inventory_id = ?
     order by item.item_id;
 `
-
+const read_all_item_sql = `
+    select *
+    from item
+    order by item_id
+`
 app.get('/inventory/:id', (req, res) => {
-    console.log(req.params.id);
-    db.execute(read_item_sql, [req.params.id], (error, results) => {
+    const inventoryId = req.params.id;
+
+    // Fetch inventory details
+    db.execute(read_item_sql, [inventoryId], (error, inventoryResults) => {
         if (DEBUG)
-        console.log(error ? error : results);
-    if (error)
-        res.status(500).send(error); //Internal Server Error
-    else if (results.length == 0)
-        res.status(404).send(`No inventory found with id = "${req.params.id}"` );
-    else{
-    let data = {itemList: results}; // results is still an array, get first (only) element
-    res.render('inventory', data);
-    } 
-    })
-  });
+            console.log(error ? error : inventoryResults);
+
+        if (error) {
+            res.status(500).send(error); // Internal Server Error
+            return;
+        }
+
+        if (inventoryResults.length === 0) {
+            res.status(404).send(`No inventory found with id = "${inventoryId}"`);
+            return;
+        }
+
+        // Fetch all item names
+        db.execute(read_all_item_sql, [], (itemError, allItemResults) => {
+            if (DEBUG)
+                console.log(itemError ? itemError : allItemResults);
+
+            if (itemError) {
+                res.status(500).send(itemError); // Internal Server Error
+                return;
+            }
+
+            const data = {
+                itemList: inventoryResults,
+                allItemNames: allItemResults
+            };1
+
+            res.render('inventory', data);
+        });
+    });
+});
 
 const read_detail_sql = `
-    select item_name, item_brand, item_count, item_desc
-    from items
-    where items.item_id = ?
+    select *
+    from item
+    where item.item_id = ?
 `
 
 //define a route for the details page
@@ -83,8 +104,114 @@ app.get("/inventory/detail/:id", (req, res) => {
         })
 })
 
+const update_inv_sql = `
+    UPDATE inv_item
+    SET
+        item_id = ?,
+        quantity = ?
+    WHERE
+        inventory_id = ? AND item_id = ?;
+`;
+
+app.post("/inventory/:id/update", (req, res) => {
+    const { id: inventory_id } = req.params;
+    const { new_item_id, new_quantity, old_item_id } = req.body;
+
+    db.execute(update_inv_sql, [new_item_id, new_quantity, inventory_id, old_item_id], (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send(error); // Internal Server Error
+        } else {
+            // Redirect to the /inventory/:id page
+            res.redirect(`/inventory/${inventory_id}`);
+        }
+    });
+});
+
+// THIS DOESNT WORK YET T-T
+const update_item_sql = `
+UPDATE item
+SET
+    item_name = ?, 
+    item_brand = ?,
+    item_cost = ?,
+    item_desc = ?,
+    item_total_amt = ?
+WHERE
+    item_id = ?
+`
+
+app.post("/inventory/detail/:id", ( req, res ) => {
+    db.execute(update_item_sql, [req.body.title, req.body.brand, req.body.number, req.body.cost, req.body.description, req.params.id], (error, results) => {
+        if (DEBUG)
+            console.log(error ? error : results);
+        if (error)
+            res.status(500).send(error); //Internal Server Error
+        else {
+            res.redirect(`/inventory/detail/${req.params.id}`);
+        }
+    });
+});
+
+app.get("/items", (req, res) => {
+    db.execute(read_all_item_sql, (itemError, itemResults) => {
+        if (DEBUG)
+            console.log(itemError ? itemError : itemResults);
+
+        if (itemError) {
+            res.status(500).send(itemError); // Internal Server Error
+            return;
+        }
+
+            // Render the 'schedule' view 
+            res.render('all_item', { itemList: itemResults });
+        });
+    });
+
+
+const delete_item_sql = `
+DELETE
+from item
+where item_id = ?
+`
+app.get("/inventory/detail/:id/delete", (req, res) => {
+    db.execute(delete_item_sql, [req.params.id], (error, results) => {
+        if (DEBUG)
+            console.log(error ? error : results);
+        if (error)
+            res.status(500).send(error); //Internal Server Error
+        else {
+            res.redirect("/locations");
+        }
+    })
+})
+
+const add_item_sql = `
+    INSERT INTO item
+     (item_name, item_brand, item_total_amt, item_cost, item_desc)
+    VALUES
+        (?, ?, ?, ?, ?);
+`
+
+app.post("/inventory/items", (req, res) => {
+    db.execute(add_item_sql, [req.params.id, req.body.name, req.body.brand, req.body.number, req.body.cost, req.body.desc], (error, results) => {
+        if (DEBUG)
+            console.log(error ? error : results);
+        if (error)
+            res.status(500).send(error); //Internal Server Error
+        else {
+            res.redirect(`/inventory/detail/${results.insertId}`);
+        }
+    })
+})
+
+// CODE THIS LATER
+const add_inv_sql = `
+
+`
+
 const read_sessions_sql = `
-SELECT loc_name, ses_name
+SELECT ses_id, loc_name, ses_name
 from session
 join location on session.loc_id = location.loc_id
 order by ses_id
@@ -114,28 +241,80 @@ join location on session.loc_id = location.loc_id
 where ses_id = ?
 `
 
-app.get("/schedule/session/:id", (req, res) => {
-            db.execute(read_sessions_detail_sql, [req.params.id], (sesError, sesResults) => {
+const read_ses_loc_detail_sql = `
+SELECT loc_id, loc_name
+FROM location
+ORDER BY loc_id
+`
+
+app.get("/schedule/session/detail/:id", (req, res) => {
+    db.execute(read_sessions_detail_sql, [req.params.id], (sesError, sesResults) => {
+        if (DEBUG)
+            console.log(sesError ? sesError : sesResults);
+
+        if (sesError) {
+            res.status(500).send(sesError); // Internal Server Error
+            return;
+        }
+
+        // Now, fetch locResults
+        db.execute(read_ses_loc_detail_sql, [], (locError, locResults) => {
             if (DEBUG)
-                console.log(sesError ? sesError : sesResults);
-    
-            if (sesError) {
-                res.status(500).send(sesError); // Internal Server Error
+                console.log(locError ? locError : locResults);
+
+            if (locError) {
+                res.status(500).send(locError); // Internal Server Error
                 return;
             }
 
-            console.log('sesResults:', sesResults);
+            console.log('locResults:', locResults);
+            console.log('sesResults:', sesResults[0]);
 
-            if (sesResults.length > 0 && sesResults[0].length > 0) {
-                // Render the 'detail view with both sets of results
-                res.render('ses_detail', { sesList: sesResults[0] });
-            } else {
-                // Handle the case where no results are found
-                res.status(404).send('Session not found');
-            }
-            
+            // Render the 'detail view with results
+            res.render('ses_detail', { sesList: sesResults[0], locList: locResults });
         });
     });
+});
+
+const delete_session_sql = `
+DELETE
+from session
+where ses_id = ?
+`
+app.get("/schedule/session/detail/:id/delete", (req, res) => {
+    db.execute(delete_session_sql, [req.params.id], (error, results) => {
+        if (DEBUG)
+            console.log(error ? error : results);
+        if (error)
+            res.status(500).send(error); //Internal Server Error
+        else {
+            res.redirect("/schedule");
+        }
+    })
+})
+
+const update_session_sql = `
+UPDATE session
+SET
+    ses_name = ?,
+    loc_id = ?,
+    ses_day = ?,
+    ses_hour = ?,
+    ses_fee = ?
+WHERE
+    ses_id = ?
+`
+app.post("/schedule/session/detail/:id", ( req, res ) => {
+    db.execute(update_session_sql, [req.body.title, req.body.location, req.body.day, req.body.hour, req.body.fee, req.params.id], (error, results) => {
+        if (DEBUG)
+            console.log(error ? error : results);
+        if (error)
+            res.status(500).send(error); //Internal Server Error
+        else {
+            res.redirect(`/schedule/session/detail/${req.params.id}`);
+        }
+    });
+});
 
 
 //define a route for the finance page
@@ -218,7 +397,7 @@ app.get("/locations", (req, res) => {
     where loc_id = ?;`
 
     //define a route for the details page
-app.get("/location/detail/:id", (req, res) => {
+app.get("/locations/detail/:id", (req, res) => {
     db.execute(read_loc_detail_sql, [req.params.id], (error, results) => {
         if (DEBUG)
             console.log(error ? error : results);
@@ -238,7 +417,7 @@ const delete_location_sql = `
     from location
     where loc_id = ?
 `
-app.get("/location/detail/:id/delete", (req, res) => {
+app.get("/locations/detail/:id/delete", (req, res) => {
     db.execute(delete_location_sql, [req.params.id], (error, results) => {
         if (DEBUG)
             console.log(error ? error : results);
@@ -249,6 +428,26 @@ app.get("/location/detail/:id/delete", (req, res) => {
         }
     })
 })
+
+const add_location_sql = `
+    INSERT INTO location
+     (loc_name, loc_town, loc_desc)
+    VALUES
+        (?, ?, ?);
+`
+
+app.post("/locations", (req, res) => {
+    db.execute(add_location_sql, [req.body.name, req.body.town, req.body.desc], (error, results) => {
+        if (DEBUG)
+            console.log(error ? error : results);
+        if (error)
+            res.status(500).send(error); //Internal Server Error
+        else {
+            res.redirect(`/locations/detail/${results.insertId}`);
+        }
+    })
+})
+
 
 app.get("/favicon.ico", (req, res) => {
     res.sendFile(__dirname + "/views/favicon.png");
